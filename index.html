@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.min.js"></script>
+    </head>
+    <body>
+        <div id="game"></div>
+        <script>
+
+            const phaserConfig = {
+                type: Phaser.AUTO,
+                parent: "game",
+                width: 1280,
+                height: 720,
+                physics: {
+                    default: 'arcade',
+                    arcade: {
+                    
+                debug: true
+            }
+        },
+                backgroundColor: "#5DACD8",
+                scene: {
+                    preload: preload,
+                    create: create,
+                    update: update
+                }
+            };
+
+            const game = new Phaser.Game(phaserConfig);
+
+            var cloudsWhite, cloudsWhiteSmall;
+
+            function preload() {
+                this.load.image("clouds-white", "clouds-white.png");
+                this.load.image("clouds-white-small", "clouds-white-small.png");
+                this.load.image("axe", "axe.png");
+                this.load.image("player", "goblin.png");
+            }
+            function create() {
+                cloudsWhite = this.add.tileSprite(640, 200, 1280, 400, "clouds-white");
+                cloudsWhiteSmall = this.add.tileSprite(640, 200, 1280, 400, "clouds-white-small");
+
+                axes = this.physics.add.group();
+                player = this.physics.add.sprite(650, 500, "player").setScale(0.2);
+                this.physics.add.collider(player, axes, hitAxe);
+                player.setCollideWorldBounds(true);
+                cursors = this.input.keyboard.createCursorKeys();
+                
+                axe = axes.create(2000, Phaser.Math.Between(0, 720), "axe");
+                axe.setVelocity(-500, 0);
+            }
+
+            function hitAxe(player, axe){
+                this.physics.pause();
+                player.setTint(0xff0000);
+
+            }
+
+            function spawnAxe(){
+                let delay = Phaser.Math.Between(500, 3000);
+                axe = axes.create(2000, Phaser.Math.Between(0, 720), "axe");
+                axe.setVelocity(-500, 0);
+                var timer = this.time.delayedCall(delay, spawnAxe, null, this);
+            }
+            function update() {
+                player.setVelocity(0);
+                cloudsWhite.tilePositionX += 5;
+                cloudsWhiteSmall.tilePositionX += 10;
+                if (cursors.left.isDown) {
+                    player.setVelocityX(-300);
+                }
+                if (cursors.right.isDown) {
+                    player.setVelocityX(300);
+                }
+                if (cursors.up.isDown) {
+                    player.setVelocityY(-300);
+                }
+                if (cursors.down.isDown) {
+                    player.setVelocityY(300);
+                }
+            }
+
+        </script>
+    </body>
+</html>
